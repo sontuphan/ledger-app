@@ -9,22 +9,36 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
+    "@bitcoinerlab/secp256k1": "^1.2.0",
+    "@ledgerhq/device-management-kit": "^0.11.0",
+    "@ledgerhq/device-signer-kit-bitcoin": "^1.0.2",
+    "@ledgerhq/device-transport-kit-web-ble": "^1.3.0",
+    "@ledgerhq/device-transport-kit-web-hid": "^1.2.1",
+    "@ledgerhq/signer-utils": "^1.1.0",
     "@react-router/node": "^7.9.2",
     "@react-router/serve": "^7.9.2",
+    "bip32": "^4.0.0",
+    "bitcoinjs-lib": "^6.1.7",
     "isbot": "^5.1.31",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router": "^7.9.2"
+    "react-router": "^7.9.2",
+    "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@react-router/dev": "^7.9.2",
+    "@rollup/plugin-inject": "^5.0.5",
     "@tailwindcss/vite": "^4.1.13",
     "@types/node": "^22",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
+    "buffer": "^6.0.3",
+    "daisyui": "^5.5.5",
+    "process": "^0.11.10",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
+    "vite-plugin-devtools-json": "^1.0.0",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }

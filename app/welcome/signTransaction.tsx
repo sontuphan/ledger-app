@@ -5,20 +5,38 @@ import {
   DefaultDescriptorTemplate,
   DefaultWallet,
 } from '@ledgerhq/device-signer-kit-bitcoin'
-import { payments, Psbt } from 'bitcoinjs-lib'
+import { payments, Psbt, networks } from 'bitcoinjs-lib'
 import { BIP32Factory } from 'bip32'
 import * as ecc from '@bitcoinerlab/secp256k1'
-import { regtest } from 'bitcoinjs-lib/src/networks'
-import { filter, firstValueFrom, iif, map } from 'rxjs'
+import { filter, firstValueFrom, map } from 'rxjs'
 import type { DefaultSignerBtc } from '@ledgerhq/device-signer-kit-bitcoin/internal/DefaultSignerBtc.js'
 
 const bip32 = BIP32Factory(ecc)
 
-export type SignTransactionProps = { signer?: DefaultSignerBtc; path: string }
+export type SignTransactionProps = {
+  masterFingerprint: string
+  signer?: DefaultSignerBtc
+  path: string
+}
 
-export function SignTransaction({ signer, path }: SignTransactionProps) {
+export function SignTransaction({
+  masterFingerprint,
+  signer,
+  path,
+}: SignTransactionProps) {
   const onSignTransaction = useCallback(async () => {
     if (!signer) throw new Error('Ledger is not connected yet.')
+
+    signer.getExtendedPublicKey("44'/0'/0'").observable.subscribe({
+      next: (evt) => {
+        if (evt.status === DeviceActionStatus.Completed) {
+          const { extendedPublicKey: xpub } = evt.output
+          const master = bip32.fromBase58(xpub)
+          console.log(master.fingerprint.toString('hex'))
+          console.log(BigInt(master.parentFingerprint).toString(16))
+        }
+      },
+    })
 
     const { observable } = signer.getExtendedPublicKey(path)
     const xpub = await firstValueFrom(
@@ -28,11 +46,12 @@ export function SignTransaction({ signer, path }: SignTransactionProps) {
       ),
     )
 
-    const account = bip32.fromBase58(xpub)
+    const parent = bip32.fromBase58(xpub)
+    const account = parent.derive(0).derive(0)
 
     const p2wpkh = payments.p2wpkh({
       pubkey: account.publicKey,
-      network: regtest,
+      network: networks.bitcoin,
     })
 
     const utxo = {
@@ -44,14 +63,21 @@ export function SignTransaction({ signer, path }: SignTransactionProps) {
     if (!p2wpkh.address || !p2wpkh.output)
       throw new Error('Cannot construct the PSBT')
 
-    const psbt = new Psbt({ network: regtest })
+    const psbt = new Psbt({ network: networks.bitcoin })
       .addInput({
-        hash: Buffer.from(utxo.txid, 'hex'),
+        hash: utxo.txid,
         index: utxo.vout,
         witnessUtxo: {
           script: p2wpkh.output,
           value: utxo.value,
         },
+        bip32Derivation: [
+          {
+            masterFingerprint: Buffer.from(masterFingerprint, 'hex'),
+            path: `m/${path}/0/0`,
+            pubkey: account.publicKey,
+          },
+        ],
       })
       .addOutput({
         address: p2wpkh.address, // send to myself
@@ -59,7 +85,7 @@ export function SignTransaction({ signer, path }: SignTransactionProps) {
       })
 
     signer
-      .signTransaction(
+      .signPsbt(
         new DefaultWallet(path, DefaultDescriptorTemplate.NATIVE_SEGWIT),
         psbt,
       )
@@ -69,7 +95,7 @@ export function SignTransaction({ signer, path }: SignTransactionProps) {
           if (evt.status === DeviceActionStatus.Completed) evt.output
         },
       })
-  }, [signer, path])
+  }, [masterFingerprint, signer, path])
 
   return (
     <button className="btn btn-primary" onClick={onSignTransaction}>

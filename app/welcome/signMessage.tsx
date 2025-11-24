@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import { DeviceActionStatus } from '@ledgerhq/device-management-kit'
-import { crypto } from 'bitcoinjs-lib'
+import { crypto, networks } from 'bitcoinjs-lib'
 import { BIP32Factory } from 'bip32'
 import * as ecc from '@bitcoinerlab/secp256k1'
 import { filter, firstValueFrom, map } from 'rxjs'
@@ -20,7 +20,7 @@ export function SignMessage({ signer, path }: SignMessageProps) {
   const onSignMessage = useCallback(async () => {
     if (!signer) throw new Error('Ledger is not connected yet.')
 
-    const { observable } = signer.signMessage(path, MESSAGE)
+    const { observable } = signer.signMessage(`${path}/0/0`, MESSAGE)
     const { r, s } = await firstValueFrom(
       observable.pipe(
         filter((evt) => evt.status === DeviceActionStatus.Completed),
@@ -41,12 +41,10 @@ export function SignMessage({ signer, path }: SignMessageProps) {
       ),
     )
 
-    const prefix = '\x18Bitcoin Signed Message:\n'
-
     const account = bip32.fromBase58(xpub)
 
     const data = Buffer.concat([
-      Buffer.from(prefix, 'utf8'),
+      Buffer.from(networks.bitcoin.messagePrefix, 'utf8'),
       Buffer.from([MESSAGE.length]),
       Buffer.from(MESSAGE, 'utf8'),
     ])

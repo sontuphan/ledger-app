@@ -1,19 +1,24 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
+  CommandResultStatus,
   DeviceActionStatus,
   DeviceManagementKitBuilder,
 } from '@ledgerhq/device-management-kit'
 import { webHidTransportFactory } from '@ledgerhq/device-transport-kit-web-hid'
-import { SignerBtcBuilder } from '@ledgerhq/device-signer-kit-bitcoin'
-import { payments } from 'bitcoinjs-lib'
+import {
+  DefaultDescriptorTemplate,
+  DefaultWallet,
+  SignerBtcBuilder,
+} from '@ledgerhq/device-signer-kit-bitcoin'
+import { payments, networks } from 'bitcoinjs-lib'
 import { BIP32Factory } from 'bip32'
 import * as ecc from '@bitcoinerlab/secp256k1'
-import { regtest } from 'bitcoinjs-lib/src/networks'
 import { SignTransaction } from './signTransaction'
 import { SignMessage } from './signMessage'
+import { GetMasterFingerprintCommand } from '@ledgerhq/device-signer-kit-bitcoin/internal/app-binder/command/GetMasterFingerprintCommand.js'
 
-const PATH = "84'/0'/0'/0/0"
+const PATH = "84'/0'/0'"
 
 const bip32 = BIP32Factory(ecc)
 
@@ -23,7 +28,8 @@ const dmk = new DeviceManagementKitBuilder()
 
 export function Welcome() {
   const [sessionId, setSessionId] = useState('')
-  const [xpub, setXpub] = useState('')
+  const [address, setAddress] = useState('')
+  const [masterFingerprint, setMasterFingerprint] = useState('')
 
   const onConnect = useCallback(() => {
     return dmk.startDiscovering({}).subscribe({
@@ -32,6 +38,18 @@ export function Welcome() {
           device,
           sessionRefresherOptions: { isRefresherDisabled: true },
         })
+
+        const re = await dmk.sendCommand({
+          sessionId,
+          command: new GetMasterFingerprintCommand(),
+        })
+
+        if (re.status === CommandResultStatus.Error)
+          throw new Error('Cannot connect to the device')
+
+        setMasterFingerprint(
+          Buffer.from(re.data.masterFingerprint).toString('hex'),
+        )
         return setSessionId(sessionId)
       },
       error: () => {
@@ -51,27 +69,22 @@ export function Welcome() {
   }, [sessionId])
 
   useEffect(() => {
-    signer?.getExtendedPublicKey(PATH).observable.subscribe({
-      next: (evt) => {
-        if (evt.status === DeviceActionStatus.Error) return setXpub('')
-        if (evt.status === DeviceActionStatus.Completed)
-          return setXpub(evt.output.extendedPublicKey)
-      },
-      error: () => {
-        return setXpub('')
-      },
-    })
+    signer
+      ?.getWalletAddress(
+        new DefaultWallet(PATH, DefaultDescriptorTemplate.NATIVE_SEGWIT),
+        0,
+      )
+      .observable.subscribe({
+        next: (evt) => {
+          if (evt.status === DeviceActionStatus.Error) return setAddress('')
+          if (evt.status === DeviceActionStatus.Completed)
+            return setAddress(evt.output.address)
+        },
+        error: () => {
+          return setAddress('')
+        },
+      })
   }, [signer])
-
-  const address = useMemo(() => {
-    if (!xpub) return ''
-    const account = bip32.fromBase58(xpub)
-    const { address } = payments.p2wpkh({
-      pubkey: account.publicKey,
-      network: regtest,
-    })
-    return address
-  }, [xpub])
 
   return (
     <main className="w-full flex flex-col items-center justify-center p-16 gap-8">
@@ -92,7 +105,13 @@ export function Welcome() {
         {sessionId && <SignMessage path={PATH} signer={signer} />}
       </div>
       <div className="w-full gap-16 min-h-0">
-        {sessionId && <SignTransaction path={PATH} signer={signer} />}
+        {sessionId && (
+          <SignTransaction
+            masterFingerprint={masterFingerprint}
+            path={PATH}
+            signer={signer}
+          />
+        )}
       </div>
     </main>
   )

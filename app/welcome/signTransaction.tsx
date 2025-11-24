@@ -27,17 +27,6 @@ export function SignTransaction({
   const onSignTransaction = useCallback(async () => {
     if (!signer) throw new Error('Ledger is not connected yet.')
 
-    signer.getExtendedPublicKey("44'/0'/0'").observable.subscribe({
-      next: (evt) => {
-        if (evt.status === DeviceActionStatus.Completed) {
-          const { extendedPublicKey: xpub } = evt.output
-          const master = bip32.fromBase58(xpub)
-          console.log(master.fingerprint.toString('hex'))
-          console.log(BigInt(master.parentFingerprint).toString(16))
-        }
-      },
-    })
-
     const { observable } = signer.getExtendedPublicKey(path)
     const xpub = await firstValueFrom(
       observable.pipe(

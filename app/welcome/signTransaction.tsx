@@ -5,11 +5,11 @@ import {
   DefaultDescriptorTemplate,
   DefaultWallet,
 } from '@ledgerhq/device-signer-kit-bitcoin'
+import type { DefaultSignerBtc } from '@ledgerhq/device-signer-kit-bitcoin/internal/DefaultSignerBtc.js'
 import { payments, Psbt, networks } from 'bitcoinjs-lib'
 import { BIP32Factory } from 'bip32'
 import * as ecc from '@bitcoinerlab/secp256k1'
 import { filter, firstValueFrom, map } from 'rxjs'
-import type { DefaultSignerBtc } from '@ledgerhq/device-signer-kit-bitcoin/internal/DefaultSignerBtc.js'
 
 const bip32 = BIP32Factory(ecc)
 
@@ -27,16 +27,17 @@ export function SignTransaction({
   const onSignTransaction = useCallback(async () => {
     if (!signer) throw new Error('Ledger is not connected yet.')
 
-    const { observable } = signer.getExtendedPublicKey(path)
-    const xpub = await firstValueFrom(
-      observable.pipe(
+    const { observable: getttingXpub } = signer.getExtendedPublicKey(
+      `${path}/0/0`,
+    )
+    const account = await firstValueFrom(
+      getttingXpub.pipe(
         filter((evt) => evt.status === DeviceActionStatus.Completed),
-        map((evt) => evt.output.extendedPublicKey),
+        map(({ output: { extendedPublicKey } }) =>
+          bip32.fromBase58(extendedPublicKey),
+        ),
       ),
     )
-
-    const parent = bip32.fromBase58(xpub)
-    const account = parent.derive(0).derive(0)
 
     const p2wpkh = payments.p2wpkh({
       pubkey: account.publicKey,
@@ -47,7 +48,7 @@ export function SignTransaction({
       txid: 'cadb0f4ec36b4224cfad23c3add46d03fe500b0d8f0760e913dcbf29210bd8fe',
       vout: 0,
       value: 5_000_000_000,
-    }
+    } // dummy tx
 
     if (!p2wpkh.address || !p2wpkh.output)
       throw new Error('Cannot construct the PSBT')
@@ -73,17 +74,18 @@ export function SignTransaction({
         value: utxo.value - 500, // minus fee
       })
 
-    signer
-      .signPsbt(
-        new DefaultWallet(path, DefaultDescriptorTemplate.NATIVE_SEGWIT),
-        psbt,
-      )
-      .observable.subscribe({
-        next: (evt) => {
-          console.log(evt)
-          if (evt.status === DeviceActionStatus.Completed) evt.output
-        },
-      })
+    const { observable: signingPsbt } = signer.signPsbt(
+      new DefaultWallet(path, DefaultDescriptorTemplate.NATIVE_SEGWIT),
+      psbt,
+    )
+    const [partialSig] = await firstValueFrom(
+      signingPsbt.pipe(
+        filter((evt) => evt.status === DeviceActionStatus.Completed),
+        map((evt) => evt.output),
+      ),
+    )
+
+    console.log(partialSig)
   }, [masterFingerprint, signer, path])
 
   return (

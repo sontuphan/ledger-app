@@ -11,16 +11,11 @@ import {
   DefaultWallet,
   SignerBtcBuilder,
 } from '@ledgerhq/device-signer-kit-bitcoin'
-import { payments, networks } from 'bitcoinjs-lib'
-import { BIP32Factory } from 'bip32'
-import * as ecc from '@bitcoinerlab/secp256k1'
 import { SignTransaction } from './signTransaction'
 import { SignMessage } from './signMessage'
 import { GetMasterFingerprintCommand } from '@ledgerhq/device-signer-kit-bitcoin/internal/app-binder/command/GetMasterFingerprintCommand.js'
 
 const PATH = "84'/0'/0'"
-
-const bip32 = BIP32Factory(ecc)
 
 const dmk = new DeviceManagementKitBuilder()
   .addTransport(webHidTransportFactory)

@@ -85,7 +85,17 @@ export function SignTransaction({
       ),
     )
 
-    console.log(partialSig)
+    if ('signature' in partialSig) {
+      const { pubkey, signature } = partialSig
+      psbt.updateInput(partialSig.inputIndex, {
+        partialSig: [
+          { pubkey: Buffer.from(pubkey), signature: Buffer.from(signature) },
+        ],
+      })
+      return psbt
+    } else {
+      // other case
+    }
   }, [masterFingerprint, signer, path])
 
   return (

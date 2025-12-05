@@ -1,3 +1,4 @@
+import type { Route } from './+types'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
@@ -21,7 +22,14 @@ const dmk = new DeviceManagementKitBuilder()
   .addTransport(webHidTransportFactory)
   .build()
 
-export function Welcome() {
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: 'Bitcoin App' },
+    { name: 'description', content: 'Bitcoin App' },
+  ]
+}
+
+export default function Bitcoin() {
   const [sessionId, setSessionId] = useState('')
   const [address, setAddress] = useState('')
   const [masterFingerprint, setMasterFingerprint] = useState('')

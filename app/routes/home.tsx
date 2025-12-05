@@ -1,13 +1,19 @@
-import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
+import { NavLink } from 'react-router'
+import type { Route } from './+types/home'
 
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
-  ];
+  return [{ title: 'Home' }, { name: 'description', content: 'Home' }]
 }
 
 export default function Home() {
-  return <Welcome />;
+  return (
+    <div className="w-full flex flex-row gap-8 p-16">
+      <NavLink className="btn btn-primary" to="/bitcoin">
+        Bitcoin App
+      </NavLink>
+      <NavLink className="btn btn-primary" to="/ethereum">
+        Ethereum App
+      </NavLink>
+    </div>
+  )
 }

@@ -17,6 +17,9 @@ importers:
       '@ledgerhq/device-signer-kit-bitcoin':
         specifier: 1.0.2
         version: 1.0.2(@ledgerhq/device-management-kit@0.11.0(rxjs@7.8.2))(bitcoinjs-lib@6.1.7)
+      '@ledgerhq/device-signer-kit-ethereum':
+        specifier: ^1.9.3
+        version: 1.9.3(@ledgerhq/context-module@1.11.0(@ledgerhq/device-management-kit@0.11.0(rxjs@7.8.2)))(@ledgerhq/device-management-kit@0.11.0(rxjs@7.8.2))
       '@ledgerhq/device-transport-kit-web-hid':
         specifier: ^1.2.1
         version: 1.2.1(@ledgerhq/device-management-kit@0.11.0(rxjs@7.8.2))(rxjs@7.8.2)
@@ -95,6 +98,9 @@ importers:
         version: 5.1.4(typescript@5.9.3)(vite@7.2.2(@types/node@22.19.1)(jiti@2.6.1)(lightningcss@1.30.2))
 
 packages:
+
+  '@adraffy/ens-normalize@1.10.1':
+    resolution: {integrity: sha512-96Z2IP3mYmF1Xg2cDm8f1gWGf/HUVedQ3FMifV4kG/PQ4yEP51xDtRAEfhVNt5f/uzpNkZHwWQuUcu6D6K+Ekw==}
 
   '@babel/code-frame@7.27.1':
     resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
@@ -423,6 +429,11 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
+  '@ledgerhq/context-module@1.11.0':
+    resolution: {integrity: sha512-/CDVXdi88EBITtKwb5a4PLJwqxO1ntkNkETdGGD0u2Umi544sd83CQEemZ/vcz3ySpJaOSVGgNl+64CXE6EP5A==}
+    peerDependencies:
+      '@ledgerhq/device-management-kit': 0.11.2
+
   '@ledgerhq/device-management-kit@0.11.0':
     resolution: {integrity: sha512-DRBrkb434814WRCFC5FLG3dLBHEdkN9C5f1ierSBjCq/TW27xbRdMFpweigpkYwPXpRPcoJB0kTkk/1RpyqVRA==}
     peerDependencies:
@@ -433,6 +444,12 @@ packages:
     peerDependencies:
       '@ledgerhq/device-management-kit': 0.11.0
       bitcoinjs-lib: ^6.1.6
+
+  '@ledgerhq/device-signer-kit-ethereum@1.9.3':
+    resolution: {integrity: sha512-jGvayQXSCKYVQPYYzM5tQhLYtQP6sbcqRmfGOkNdzZ17rkJsy3GllS8voxSgYkLv2HTt53BLWcrqZxtzokYwSQ==}
+    peerDependencies:
+      '@ledgerhq/context-module': 1.11.0
+      '@ledgerhq/device-management-kit': 0.11.2
 
   '@ledgerhq/device-transport-kit-web-hid@1.2.1':
     resolution: {integrity: sha512-goq1uTsz93uxj5pe1kzz/baca7hQ2O4ZPplypC97rN68TRtDTOhpAvPazOoFsDgOnbJcdKF4/CU2ZAurzxI1fg==}
@@ -448,9 +465,16 @@ packages:
   '@mjackson/node-fetch-server@0.2.0':
     resolution: {integrity: sha512-EMlH1e30yzmTpGLQjlFmaDAjyOeZhng1/XCd7DExR8PNAnG/G1tyruZxEoUe11ClnwGhGrtsdnyyUx1frSzjng==}
 
+  '@noble/curves@1.2.0':
+    resolution: {integrity: sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==}
+
   '@noble/curves@1.9.7':
     resolution: {integrity: sha512-gbKGcRUYIjA3/zCCNaWDciTMFI0dCkvou3TL8Zmy5Nc7sJ47a0jtOeZoTaMxkuqRo9cRhjOdZJXegxYE5FN/xw==}
     engines: {node: ^14.21.3 || >=16}
+
+  '@noble/hashes@1.3.2':
+    resolution: {integrity: sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==}
+    engines: {node: '>= 16'}
 
   '@noble/hashes@1.8.0':
     resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
@@ -773,6 +797,9 @@ packages:
   '@types/node@22.19.1':
     resolution: {integrity: sha512-LCCV0HdSZZZb34qifBsyWlUmok6W7ouER+oQIGBScS8EsZsQbrtFTUrDX4hOl+CS6p7cnNC4td+qrSVGSCTUfQ==}
 
+  '@types/node@22.7.5':
+    resolution: {integrity: sha512-jML7s2NAzMWc//QSJ1a3prpk78cOPchGvXJsC3C6R6PSMoooztvRVQEz89gmBTBY1SPMaqo5teB4uNHPdetShQ==}
+
   '@types/react-dom@19.2.3':
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
     peerDependencies:
@@ -784,6 +811,9 @@ packages:
   accepts@1.3.8:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
     engines: {node: '>= 0.6'}
+
+  aes-js@4.0.0-beta.5:
+    resolution: {integrity: sha512-G965FqalsNyrPqgEGON7nIx1e/OVENSgiEIzyC63haUMuvNnwIgIjMs52hlTCKhkBny7A2ORNlfY9Zu+jmGk1Q==}
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -1092,6 +1122,10 @@ packages:
   etag@1.8.1:
     resolution: {integrity: sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==}
     engines: {node: '>= 0.6'}
+
+  ethers@6.14.1:
+    resolution: {integrity: sha512-JnFiPFi3sK2Z6y7jZ3qrafDMwiXmU+6cNZ0M+kPq+mTy9skqEzwqAdFW3nb/em2xjlIVXX6Lz8ID6i3LmS4+fQ==}
+    engines: {node: '>=14.0.0'}
 
   exit-hook@2.2.1:
     resolution: {integrity: sha512-eNTPlAD67BmP31LDINZ3U7HSF8l57TxOY2PmBJ1shpCvpnxBF93mWCE8YHBnXs8qiUZJc9WDcWIeC3a2HIAMfw==}
@@ -1776,6 +1810,9 @@ packages:
   tslib@1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
 
+  tslib@2.7.0:
+    resolution: {integrity: sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==}
+
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
@@ -1794,6 +1831,9 @@ packages:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
     hasBin: true
+
+  undici-types@6.19.8:
+    resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
 
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
@@ -1932,6 +1972,18 @@ packages:
     resolution: {integrity: sha512-si7QWI6zUMq56bESFvagtmzMdGOtoxfR+Sez11Mobfc7tm+VkUckk9bW2UeffTGVUbOksxmSw0AA2gs8g71NCQ==}
     engines: {node: '>=12'}
 
+  ws@8.17.1:
+    resolution: {integrity: sha512-6XQFvXTkbfUOZOKKILFG1PDK2NDQs4azKQl26T0YS5CxqWLgXajbPZ+h4gZekJyRqFU8pvnbAbbs/3TgRPy+GQ==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
   ws@8.18.3:
     resolution: {integrity: sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==}
     engines: {node: '>=10.0.0'}
@@ -1951,6 +2003,8 @@ packages:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
 
 snapshots:
+
+  '@adraffy/ens-normalize@1.10.1': {}
 
   '@babel/code-frame@7.27.1':
     dependencies:
@@ -2273,6 +2327,20 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
+  '@ledgerhq/context-module@1.11.0(@ledgerhq/device-management-kit@0.11.0(rxjs@7.8.2))':
+    dependencies:
+      '@ledgerhq/device-management-kit': 0.11.0(rxjs@7.8.2)
+      axios: 1.8.2
+      crypto-js: 4.2.0
+      ethers: 6.14.1
+      inversify: 7.5.1(reflect-metadata@0.2.2)
+      purify-ts: 2.1.0
+      reflect-metadata: 0.2.2
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - utf-8-validate
+
   '@ledgerhq/device-management-kit@0.11.0(rxjs@7.8.2)':
     dependencies:
       '@sentry/minimal': 6.19.7
@@ -2303,6 +2371,21 @@ snapshots:
       reflect-metadata: 0.2.2
       xstate: 5.19.2
 
+  '@ledgerhq/device-signer-kit-ethereum@1.9.3(@ledgerhq/context-module@1.11.0(@ledgerhq/device-management-kit@0.11.0(rxjs@7.8.2)))(@ledgerhq/device-management-kit@0.11.0(rxjs@7.8.2))':
+    dependencies:
+      '@ledgerhq/context-module': 1.11.0(@ledgerhq/device-management-kit@0.11.0(rxjs@7.8.2))
+      '@ledgerhq/device-management-kit': 0.11.0(rxjs@7.8.2)
+      '@ledgerhq/signer-utils': 1.1.0(@ledgerhq/device-management-kit@0.11.0(rxjs@7.8.2))
+      ethers: 6.14.1
+      inversify: 7.5.1(reflect-metadata@0.2.2)
+      purify-ts: 2.1.0
+      reflect-metadata: 0.2.2
+      semver: 7.7.2
+      xstate: 5.19.2
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   '@ledgerhq/device-transport-kit-web-hid@1.2.1(@ledgerhq/device-management-kit@0.11.0(rxjs@7.8.2))(rxjs@7.8.2)':
     dependencies:
       '@ledgerhq/device-management-kit': 0.11.0(rxjs@7.8.2)
@@ -2317,9 +2400,15 @@ snapshots:
 
   '@mjackson/node-fetch-server@0.2.0': {}
 
+  '@noble/curves@1.2.0':
+    dependencies:
+      '@noble/hashes': 1.3.2
+
   '@noble/curves@1.9.7':
     dependencies:
       '@noble/hashes': 1.8.0
+
+  '@noble/hashes@1.3.2': {}
 
   '@noble/hashes@1.8.0': {}
 
@@ -2619,6 +2708,10 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
+  '@types/node@22.7.5':
+    dependencies:
+      undici-types: 6.19.8
+
   '@types/react-dom@19.2.3(@types/react@19.2.5)':
     dependencies:
       '@types/react': 19.2.5
@@ -2631,6 +2724,8 @@ snapshots:
     dependencies:
       mime-types: 2.1.35
       negotiator: 0.6.3
+
+  aes-js@4.0.0-beta.5: {}
 
   ansi-regex@5.0.1: {}
 
@@ -2959,6 +3054,19 @@ snapshots:
   estree-walker@2.0.2: {}
 
   etag@1.8.1: {}
+
+  ethers@6.14.1:
+    dependencies:
+      '@adraffy/ens-normalize': 1.10.1
+      '@noble/curves': 1.2.0
+      '@noble/hashes': 1.3.2
+      '@types/node': 22.7.5
+      aes-js: 4.0.0-beta.5
+      tslib: 2.7.0
+      ws: 8.17.1
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
 
   exit-hook@2.2.1: {}
 
@@ -3633,6 +3741,8 @@ snapshots:
 
   tslib@1.14.1: {}
 
+  tslib@2.7.0: {}
+
   tslib@2.8.1: {}
 
   type-is@1.6.18:
@@ -3649,6 +3759,8 @@ snapshots:
   typeforce@1.18.0: {}
 
   typescript@5.9.3: {}
+
+  undici-types@6.19.8: {}
 
   undici-types@6.21.0: {}
 
@@ -3774,6 +3886,8 @@ snapshots:
       ansi-styles: 6.2.3
       string-width: 5.1.2
       strip-ansi: 7.1.2
+
+  ws@8.17.1: {}
 
   ws@8.18.3: {}
 

@@ -91,6 +91,7 @@ export default function Bitcoin() {
 
   return (
     <main className="w-full flex flex-col items-center justify-center p-16 gap-8">
+      <p className="w-full opacity-60 font-bold">Bitcoin App</p>
       <div className="w-full gap-16 min-h-0">
         <button
           className="btn btn-primary"

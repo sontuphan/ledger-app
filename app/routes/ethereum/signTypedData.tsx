@@ -3,20 +3,38 @@ import { useCallback, useEffect, useState } from 'react'
 import { DeviceActionStatus } from '@ledgerhq/device-management-kit'
 import { filter, firstValueFrom, map } from 'rxjs'
 import type { DefaultSignerEth } from '@ledgerhq/device-signer-kit-ethereum/internal/DefaultSignerEth.js'
-import { verifyMessage } from 'viem'
+import { verifyTypedData, zeroAddress } from 'viem'
+import { sepolia } from 'viem/chains'
 
-const MESSAGE = 'hello world'
+const TYPED_DATA = {
+  domain: {
+    name: 'Ethereum App',
+    version: '1',
+    chainId: sepolia.id,
+  },
+  types: {
+    Person: [
+      { name: 'name', type: 'string' },
+      { name: 'wallet', type: 'address' },
+    ],
+  },
+  primaryType: 'Person',
+  message: {
+    name: 'Burner',
+    wallet: zeroAddress,
+  },
+}
 
-export type SignMessageProps = { signer?: DefaultSignerEth; path: string }
+export type SignTypedDataProps = { signer?: DefaultSignerEth; path: string }
 
-export function SignMessage({ signer, path }: SignMessageProps) {
+export function SignTypedData({ signer, path }: SignTypedDataProps) {
   const [sig, setSig] = useState('')
   const [valid, setValid] = useState(false)
 
-  const onSignMessage = useCallback(async () => {
+  const onSignTypedData = useCallback(async () => {
     if (!signer) throw new Error('Ledger is not connected yet.')
 
-    const { observable } = signer.signMessage(`${path}/0/0`, MESSAGE)
+    const { observable } = signer.signTypedData(`${path}/0/0`, TYPED_DATA)
     const { r, s, v } = await firstValueFrom(
       observable.pipe(
         filter((evt) => evt.status === DeviceActionStatus.Completed),
@@ -29,7 +47,7 @@ export function SignMessage({ signer, path }: SignMessageProps) {
     )
   }, [signer, path])
 
-  const onVerifyMessage = useCallback(async () => {
+  const onVerifyTypedData = useCallback(async () => {
     if (!signer || !sig) return setValid(false)
     const { observable } = signer.getAddress(`${path}/0/0`)
     const address = await firstValueFrom(
@@ -38,23 +56,26 @@ export function SignMessage({ signer, path }: SignMessageProps) {
         map((evt) => evt.output.address),
       ),
     )
-    const ok = await verifyMessage({
+    const ok = await verifyTypedData({
       address,
-      message: MESSAGE,
       signature: `0x${sig}`,
+      domain: TYPED_DATA.domain,
+      message: TYPED_DATA.message,
+      primaryType: TYPED_DATA.primaryType as 'Person',
+      types: TYPED_DATA.types,
     })
     return setValid(ok)
   }, [signer, sig, path])
 
   useEffect(() => {
-    onVerifyMessage()
-  }, [onVerifyMessage])
+    onVerifyTypedData()
+  }, [onVerifyTypedData])
 
   return (
     <div className="w-full flex flex-col gap-4">
       <div>
-        <button className="btn btn-primary" onClick={onSignMessage}>
-          Sign message
+        <button className="btn btn-primary" onClick={onSignTypedData}>
+          Sign typed data
         </button>
       </div>
       <p>

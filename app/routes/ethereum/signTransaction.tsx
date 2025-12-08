@@ -3,9 +3,9 @@ import { useCallback } from 'react'
 import { DeviceActionStatus } from '@ledgerhq/device-management-kit'
 import { filter, firstValueFrom, map } from 'rxjs'
 import type { DefaultSignerEth } from '@ledgerhq/device-signer-kit-ethereum/internal/DefaultSignerEth.js'
-import { createPublicClient, fromHex, http, parseEther, type Hex } from 'viem'
+import { createPublicClient, http, parseEther } from 'viem'
 import { sepolia } from 'viem/chains'
-import { Signature, Transaction } from 'ethers'
+import { getBytes, Signature, Transaction } from 'ethers'
 
 export type SignTransactionProps = {
   signer?: DefaultSignerEth
@@ -47,7 +47,7 @@ export function SignTransaction({ signer, path }: SignTransactionProps) {
 
     const { observable: signTransaction } = signer.signTransaction(
       `${path}/0/0`,
-      fromHex(tx.unsignedSerialized as Hex, 'bytes'),
+      getBytes(tx.unsignedSerialized),
     )
     const { r, s, v } = await firstValueFrom(
       signTransaction.pipe(
@@ -57,8 +57,6 @@ export function SignTransaction({ signer, path }: SignTransactionProps) {
     )
 
     tx.signature = Signature.from({ r, s, v })
-
-    console.log(tx.serialized)
 
     return tx.serialized
   }, [signer, path])

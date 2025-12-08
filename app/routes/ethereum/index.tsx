@@ -9,6 +9,7 @@ import { webHidTransportFactory } from '@ledgerhq/device-transport-kit-web-hid'
 import { SignerEthBuilder } from '@ledgerhq/device-signer-kit-ethereum'
 import { SignMessage } from './signMessage'
 import { SignTransaction } from './signTransaction'
+import { SignTypedData } from './signTypedData'
 
 const PATH = "44'/60'/0'"
 
@@ -84,6 +85,9 @@ export default function Ethereum() {
       </div>
       <div className="w-full gap-16 min-h-0">
         {sessionId && <SignMessage path={PATH} signer={signer} />}
+      </div>
+      <div className="w-full gap-16 min-h-0">
+        {sessionId && <SignTypedData path={PATH} signer={signer} />}
       </div>
       <div className="w-full gap-16 min-h-0">
         {sessionId && <SignTransaction path={PATH} signer={signer} />}

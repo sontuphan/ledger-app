@@ -7,6 +7,7 @@ import {
 } from '@ledgerhq/device-management-kit'
 import { webHidTransportFactory } from '@ledgerhq/device-transport-kit-web-hid'
 import { SignerEthBuilder } from '@ledgerhq/device-signer-kit-ethereum'
+import { SignMessage } from './signMessage'
 
 const PATH = "44'/60'/0'"
 
@@ -52,7 +53,7 @@ export default function Ethereum() {
   }, [sessionId])
 
   useEffect(() => {
-    signer?.getAddress(PATH).observable.subscribe({
+    signer?.getAddress(`${PATH}/0/0`).observable.subscribe({
       next: (evt) => {
         if (evt.status === DeviceActionStatus.Error) return setAddress('')
         if (evt.status === DeviceActionStatus.Completed)
@@ -80,7 +81,9 @@ export default function Ethereum() {
           {address}
         </p>
       </div>
-      <div className="w-full gap-16 min-h-0">{sessionId && 'Sign Message'}</div>
+      <div className="w-full gap-16 min-h-0">
+        {sessionId && <SignMessage path={PATH} signer={signer} />}
+      </div>
       <div className="w-full gap-16 min-h-0">
         {sessionId && 'Sign Transaction'}
       </div>

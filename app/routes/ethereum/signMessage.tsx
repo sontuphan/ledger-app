@@ -10,7 +10,7 @@ const MESSAGE = 'hello world'
 export type SignMessageProps = { signer?: DefaultSignerEth; path: string }
 
 export function SignMessage({ signer, path }: SignMessageProps) {
-  const [sig, setSig] = useState<Hex>()
+  const [sig, setSig] = useState('')
   const [valid, setValid] = useState(false)
 
   const onSignMessage = useCallback(async () => {
@@ -25,10 +25,7 @@ export function SignMessage({ signer, path }: SignMessageProps) {
     )
 
     return setSig(
-      ('0x' +
-        r.replace(/^0x/, '') +
-        s.replace(/^0x/, '') +
-        BigInt(v).toString(16)) as Hex,
+      r.replace(/^0x/, '') + s.replace(/^0x/, '') + BigInt(v).toString(16),
     )
   }, [signer, path])
 
@@ -44,7 +41,7 @@ export function SignMessage({ signer, path }: SignMessageProps) {
     const ok = await verifyMessage({
       address,
       message: MESSAGE,
-      signature: sig,
+      signature: `0x${sig}`,
     })
     return setValid(ok)
   }, [signer, sig, path])

@@ -14,6 +14,9 @@ export default function Home() {
       <NavLink className="btn btn-primary" to="/ethereum">
         Ethereum App
       </NavLink>
+      <NavLink className="btn btn-primary" to="/solana">
+        Solana App
+      </NavLink>
     </div>
   )
 }

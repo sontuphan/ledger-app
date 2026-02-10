@@ -8,7 +8,7 @@ import {
 import { webHidTransportFactory } from '@ledgerhq/device-transport-kit-web-hid'
 import { SignerSolanaBuilder } from '@ledgerhq/device-signer-kit-solana'
 import { SignMessage } from './signMessage'
-// import { SignTransaction } from './signTransaction'
+import { SignTransaction } from './signTransaction'
 
 const PATH = "44'/501'/0'"
 
@@ -60,7 +60,7 @@ export default function Solana() {
         if (evt.status === DeviceActionStatus.Completed)
           return setAddress(evt.output)
       },
-      error: (e) => {
+      error: () => {
         return setAddress('')
       },
     })
@@ -85,9 +85,9 @@ export default function Solana() {
       <div className="w-full gap-16 min-h-0">
         {sessionId && <SignMessage path={PATH} signer={signer} />}
       </div>
-      {/* <div className="w-full gap-16 min-h-0">
+      <div className="w-full gap-16 min-h-0">
         {sessionId && <SignTransaction path={PATH} signer={signer} />}
-      </div> */}
+      </div>
     </main>
   )
 }

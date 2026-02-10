@@ -32,14 +32,10 @@ export function SignMessage({ signer, path }: SignMessageProps) {
     )
 
     const [[addr, sig]] = Object.entries(signatures)
+    const pubkey = await getPublicKeyFromAddress(address(addr))
 
     if (sig) {
-      const ok = await verifySignature(
-        await getPublicKeyFromAddress(address(addr)),
-        sig,
-        content,
-      )
-
+      const ok = await verifySignature(pubkey, sig, content)
       setSig(getBase58Decoder().decode(sig))
       return setValid(ok)
     } else {

@@ -12,10 +12,13 @@ import {
   createTransactionMessage,
   getBase58Decoder,
   getCompiledTransactionMessageEncoder,
+  getTransactionEncoder,
   lamports,
   pipe,
   setTransactionMessageFeePayer,
   setTransactionMessageLifetimeUsingBlockhash,
+  signatureBytes,
+  type TransactionMessageBytes,
 } from '@solana/kit'
 import { getAddMemoInstruction } from '@solana-program/memo'
 import { getTransferSolInstruction } from '@solana-program/system'
@@ -33,9 +36,9 @@ export function SignTransaction({ signer, path }: SignTransactionProps) {
   const onSignTransaction = useCallback(async () => {
     if (!signer) throw new Error('Ledger is not connected yet.')
 
-    const { observable } = signer.getAddress(`${path}/0'/0'`)
+    const { observable: getAddress } = signer.getAddress(`${path}/0'/0'`)
     const addr = await firstValueFrom(
-      observable.pipe(
+      getAddress.pipe(
         filter((evt) => evt.status === DeviceActionStatus.Completed),
         map(({ output }) => output),
       ),
@@ -64,20 +67,29 @@ export function SignTransaction({ signer, path }: SignTransactionProps) {
       (m) => compileTransactionMessage(m),
     )
 
-    const serializedTx = getCompiledTransactionMessageEncoder().encode(tx)
+    const serializedTx = getCompiledTransactionMessageEncoder().encode(
+      tx,
+    ) as TransactionMessageBytes
 
-    const { observable: signedTransaction } = signer.signTransaction(
+    const { observable: signTransaction } = signer.signTransaction(
       `${path}/0'/0'`,
-      new Uint8Array(serializedTx),
+      Uint8Array.from(serializedTx),
     )
     const signature = await firstValueFrom(
-      signedTransaction.pipe(
+      signTransaction.pipe(
         filter((evt) => evt.status === DeviceActionStatus.Completed),
         map((evt) => evt.output),
       ),
     )
 
-    return setSig(getBase58Decoder().decode(signature))
+    const signedTransaction = getTransactionEncoder().encode({
+      messageBytes: serializedTx,
+      signatures: {
+        [address(addr)]: signatureBytes(signature),
+      },
+    })
+
+    return setSig(getBase58Decoder().decode(signedTransaction))
   }, [signer, path])
 
   return (
@@ -88,7 +100,7 @@ export function SignTransaction({ signer, path }: SignTransactionProps) {
         </button>
       </div>
       <p className="text-base-content whitespace-normal wrap-break-word">
-        <span className="opacity-60">Signature: </span>
+        <span className="opacity-60">Signed Tx: </span>
         {sig}
       </p>
     </div>

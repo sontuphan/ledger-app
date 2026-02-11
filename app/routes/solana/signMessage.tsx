@@ -6,9 +6,27 @@ import type { DefaultSignerSolana } from '@ledgerhq/device-signer-kit-solana/int
 import { verifySignature } from '@solana/keys'
 import { getBase58Decoder, getBase58Encoder } from '@solana/codecs'
 import { address, getPublicKeyFromAddress } from '@solana/addresses'
-import { getOffchainMessageEnvelopeDecoder } from '@solana/offchain-messages'
+import {
+  getOffchainMessageEncoder,
+  getOffchainMessageEnvelopeDecoder,
+  offchainMessageApplicationDomain,
+  offchainMessageContentRestrictedAsciiOf1232BytesMax,
+  type OffchainMessage,
+} from '@solana/offchain-messages'
+import { SYSTEM_PROGRAM_ADDRESS } from '@solana-program/system'
 
 const MESSAGE = 'hello world'
+
+const constructOffchainMessageContent = (addr: string, message: string) => {
+  const offchainMessage: OffchainMessage = {
+    version: 0,
+    requiredSignatories: [{ address: address(addr) }],
+    applicationDomain: offchainMessageApplicationDomain(SYSTEM_PROGRAM_ADDRESS),
+    content: offchainMessageContentRestrictedAsciiOf1232BytesMax(message),
+  }
+
+  return getOffchainMessageEncoder().encode(offchainMessage)
+}
 
 export type SignMessageProps = { signer?: DefaultSignerSolana; path: string }
 
@@ -30,18 +48,21 @@ export function SignMessage({ signer, path }: SignMessageProps) {
     const { content, signatures } = getOffchainMessageEnvelopeDecoder().decode(
       getBase58Encoder().encode(envelopedSignature),
     )
-
     const [[addr, sig]] = Object.entries(signatures)
     const pubkey = await getPublicKeyFromAddress(address(addr))
 
-    if (sig) {
-      const ok = await verifySignature(pubkey, sig, content)
-      setSig(getBase58Decoder().decode(sig))
-      return setValid(ok)
-    } else {
+    if (
+      !sig ||
+      constructOffchainMessageContent(addr, MESSAGE).toString() !==
+        content.toString()
+    ) {
       setSig('')
       return setValid(false)
     }
+
+    const ok = await verifySignature(pubkey, sig, content)
+    setSig(getBase58Decoder().decode(sig))
+    return setValid(ok)
   }, [signer, path])
 
   return (

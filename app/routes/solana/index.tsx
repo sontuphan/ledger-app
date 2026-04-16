@@ -1,20 +1,21 @@
 import type { Route } from './+types'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import {
-  DeviceActionStatus,
-  DeviceManagementKitBuilder,
-} from '@ledgerhq/device-management-kit'
-import { webHidTransportFactory } from '@ledgerhq/device-transport-kit-web-hid'
-import { SignerSolanaBuilder } from '@ledgerhq/device-signer-kit-solana'
+import { WalletAccountSolana } from '@tetherto/wdk-wallet-solana'
+import { LedgerSignerSolana } from '@tetherto/wdk-wallet-solana/signers'
+
 import { SignMessage } from './signMessage'
 import { SignTransaction } from './signTransaction'
+import { isAddress } from '@solana/kit'
 
-const PATH = "44'/501'/0'"
+const PATH = "0'/0'/0'"
 
-const dmk = new DeviceManagementKitBuilder()
-  .addTransport(webHidTransportFactory)
-  .build()
+const ledger = new LedgerSignerSolana(PATH)
+ledger._path = "44'/501'/0'/0'/0'"
+console.log(ledger._path)
+const signer = new WalletAccountSolana(ledger, {
+  rpcUrl: 'https://api.devnet.solana.com',
+})
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -24,47 +25,24 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Solana() {
-  const [sessionId, setSessionId] = useState('')
   const [address, setAddress] = useState('')
 
-  const onConnect = useCallback(() => {
-    return dmk.startDiscovering({}).subscribe({
-      next: async (device) => {
-        const sessionId = await dmk.connect({
-          device,
-          sessionRefresherOptions: { isRefresherDisabled: true },
-        })
-
-        return setSessionId(sessionId)
-      },
-      error: () => {
-        return setSessionId('')
-      },
-    })
+  const onConnect = useCallback(async () => {
+    try {
+      const address = await signer.getAddress()
+      return setAddress(address)
+    } catch (er) {
+      console.error(er)
+      return setAddress('')
+    }
   }, [])
 
   const onDisconnect = useCallback(async () => {
-    await dmk.disconnect({ sessionId })
-    return setSessionId('')
-  }, [sessionId])
-
-  const signer = useMemo(() => {
-    if (!sessionId) return undefined
-    return new SignerSolanaBuilder({ dmk, sessionId }).build()
-  }, [sessionId])
-
-  useEffect(() => {
-    signer?.getAddress(`${PATH}/0'/0'`).observable.subscribe({
-      next: (evt) => {
-        if (evt.status === DeviceActionStatus.Error) return setAddress('')
-        if (evt.status === DeviceActionStatus.Completed)
-          return setAddress(evt.output)
-      },
-      error: () => {
-        return setAddress('')
-      },
-    })
-  }, [signer])
+    if (isAddress(address)) {
+      signer.dispose()
+      return setAddress('')
+    }
+  }, [address])
 
   return (
     <main className="w-full flex flex-col items-center justify-center p-16 gap-8">
@@ -72,9 +50,9 @@ export default function Solana() {
       <div className="w-full gap-16 min-h-0">
         <button
           className="btn btn-primary"
-          onClick={!signer ? onConnect : onDisconnect}
+          onClick={!address ? onConnect : onDisconnect}
         >
-          {!signer ? 'Connect' : 'Disconnect'}
+          {!address ? 'Connect' : 'Disconnect'}
         </button>
       </div>
       <div className="w-full gap-16 min-h-0">
@@ -83,10 +61,10 @@ export default function Solana() {
         </p>
       </div>
       <div className="w-full gap-16 min-h-0">
-        {sessionId && <SignMessage path={PATH} signer={signer} />}
+        {address && <SignMessage path={PATH} signer={signer} />}
       </div>
       <div className="w-full gap-16 min-h-0">
-        {sessionId && <SignTransaction path={PATH} signer={signer} />}
+        {address && <SignTransaction path={PATH} signer={signer} />}
       </div>
     </main>
   )

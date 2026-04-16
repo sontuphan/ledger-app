@@ -1,30 +1,23 @@
 import { useCallback, useState } from 'react'
 
-import { DeviceActionStatus } from '@ledgerhq/device-management-kit'
-import { filter, firstValueFrom, map } from 'rxjs'
-import type { DefaultSignerSolana } from '@ledgerhq/device-signer-kit-solana/internal/DefaultSignerSolana.js'
+import { type WalletAccountSolana } from '@tetherto/wdk-wallet-solana'
+
 import {
   address,
   appendTransactionMessageInstruction,
-  compileTransactionMessage,
   createNoopSigner,
   createSolanaRpc,
   createTransactionMessage,
-  getBase58Decoder,
-  getCompiledTransactionMessageEncoder,
-  getTransactionEncoder,
   lamports,
   pipe,
   setTransactionMessageFeePayer,
   setTransactionMessageLifetimeUsingBlockhash,
-  signatureBytes,
-  type TransactionMessageBytes,
 } from '@solana/kit'
 import { getAddMemoInstruction } from '@solana-program/memo'
 import { getTransferSolInstruction } from '@solana-program/system'
 
 export type SignTransactionProps = {
-  signer?: DefaultSignerSolana
+  signer?: WalletAccountSolana
   path: string
 }
 
@@ -36,13 +29,7 @@ export function SignTransaction({ signer, path }: SignTransactionProps) {
   const onSignTransaction = useCallback(async () => {
     if (!signer) throw new Error('Ledger is not connected yet.')
 
-    const { observable: getAddress } = signer.getAddress(`${path}/0'/0'`)
-    const addr = await firstValueFrom(
-      getAddress.pipe(
-        filter((evt) => evt.status === DeviceActionStatus.Completed),
-        map(({ output }) => output),
-      ),
-    )
+    const addr = await signer.getAddress()
 
     const { value: latestBlockhash } = await rpc.getLatestBlockhash().send()
 
@@ -64,33 +51,12 @@ export function SignTransaction({ signer, path }: SignTransactionProps) {
           }),
           m,
         ),
-      (m) => compileTransactionMessage(m),
     )
 
-    const serializedTx = getCompiledTransactionMessageEncoder().encode(
-      tx,
-    ) as TransactionMessageBytes
+    const { hash } = await signer.sendTransaction(tx)
 
-    const { observable: signTransaction } = signer.signTransaction(
-      `${path}/0'/0'`,
-      Uint8Array.from(serializedTx),
-    )
-    const signature = await firstValueFrom(
-      signTransaction.pipe(
-        filter((evt) => evt.status === DeviceActionStatus.Completed),
-        map((evt) => evt.output),
-      ),
-    )
-
-    const signedTransaction = getTransactionEncoder().encode({
-      messageBytes: serializedTx,
-      signatures: {
-        [address(addr)]: signatureBytes(signature),
-      },
-    })
-
-    return setSig(getBase58Decoder().decode(signedTransaction))
-  }, [signer, path])
+    return setSig(hash)
+  }, [signer])
 
   return (
     <div className="w-full flex flex-col gap-4">

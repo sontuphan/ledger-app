@@ -10,10 +10,7 @@ import { isAddress } from '@solana/kit'
 
 const PATH = "0'/0'/0'"
 
-const ledger = new LedgerSignerSolana(PATH)
-ledger._path = "44'/501'/0'/0'/0'"
-console.log(ledger._path)
-const signer = new WalletAccountSolana(ledger, {
+const signer = new WalletAccountSolana(new LedgerSignerSolana(PATH), {
   rpcUrl: 'https://api.devnet.solana.com',
 })
 

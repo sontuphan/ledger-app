@@ -1,5 +1,5 @@
 import type { Route } from './+types'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import { WalletAccountSolana } from '@tetherto/wdk-wallet-solana'
 import { LedgerSignerSolana } from '@tetherto/wdk-wallet-solana/signers'

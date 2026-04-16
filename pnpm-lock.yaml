@@ -73,7 +73,7 @@ importers:
         version: 6.0.1(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)
       '@tetherto/wdk-wallet-solana':
         specifier: github:sontuphan/wdk-wallet-solana#feat/poc-signer
-        version: https://codeload.github.com/sontuphan/wdk-wallet-solana/tar.gz/1bdad59f48536a36d5110b7860a4ba5575ce9de7(@solana/kit@6.0.1(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10))(bare-abort-controller@1.1.1)(bare-buffer@3.6.0)(bare-events@2.8.2(bare-abort-controller@1.1.1))(bare-tcp@2.2.7(bare-abort-controller@1.1.1)(bare-buffer@3.6.0))(bare-url@2.4.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(sodium-javascript@0.8.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
+        version: https://codeload.github.com/sontuphan/wdk-wallet-solana/tar.gz/aaefb67dc65c3c9905c645165a44050b7243f0c3(@solana/kit@6.0.1(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10))(bare-abort-controller@1.1.1)(bare-buffer@3.6.0)(bare-events@2.8.2(bare-abort-controller@1.1.1))(bare-tcp@2.2.7(bare-abort-controller@1.1.1)(bare-buffer@3.6.0))(bare-url@2.4.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(sodium-javascript@0.8.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       bip32:
         specifier: ^4.0.0
         version: 4.0.0
@@ -1433,8 +1433,8 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7
 
-  '@tetherto/wdk-wallet-solana@https://codeload.github.com/sontuphan/wdk-wallet-solana/tar.gz/1bdad59f48536a36d5110b7860a4ba5575ce9de7':
-    resolution: {tarball: https://codeload.github.com/sontuphan/wdk-wallet-solana/tar.gz/1bdad59f48536a36d5110b7860a4ba5575ce9de7}
+  '@tetherto/wdk-wallet-solana@https://codeload.github.com/sontuphan/wdk-wallet-solana/tar.gz/aaefb67dc65c3c9905c645165a44050b7243f0c3':
+    resolution: {tarball: https://codeload.github.com/sontuphan/wdk-wallet-solana/tar.gz/aaefb67dc65c3c9905c645165a44050b7243f0c3}
     version: 1.0.0-beta.6
 
   '@tetherto/wdk-wallet@https://codeload.github.com/claudiovb/wdk-wallet/tar.gz/b6080769c456eee07ca86c08013ebae65cf1e77e':
@@ -4777,7 +4777,7 @@ snapshots:
       tailwindcss: 4.1.17
       vite: 7.2.2(@types/node@22.19.1)(jiti@2.6.1)(lightningcss@1.30.2)
 
-  '@tetherto/wdk-wallet-solana@https://codeload.github.com/sontuphan/wdk-wallet-solana/tar.gz/1bdad59f48536a36d5110b7860a4ba5575ce9de7(@solana/kit@6.0.1(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10))(bare-abort-controller@1.1.1)(bare-buffer@3.6.0)(bare-events@2.8.2(bare-abort-controller@1.1.1))(bare-tcp@2.2.7(bare-abort-controller@1.1.1)(bare-buffer@3.6.0))(bare-url@2.4.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(sodium-javascript@0.8.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
+  '@tetherto/wdk-wallet-solana@https://codeload.github.com/sontuphan/wdk-wallet-solana/tar.gz/aaefb67dc65c3c9905c645165a44050b7243f0c3(@solana/kit@6.0.1(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10))(bare-abort-controller@1.1.1)(bare-buffer@3.6.0)(bare-events@2.8.2(bare-abort-controller@1.1.1))(bare-tcp@2.2.7(bare-abort-controller@1.1.1)(bare-buffer@3.6.0))(bare-url@2.4.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(sodium-javascript@0.8.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@ledgerhq/device-management-kit': 1.0.1(bufferutil@4.0.9)(rxjs@7.8.2)(utf-8-validate@5.0.10)
       '@ledgerhq/device-signer-kit-solana': 1.6.1(@ledgerhq/device-management-kit@1.0.1(bufferutil@4.0.9)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)
